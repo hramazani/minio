@@ -24,6 +24,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -1548,6 +1549,9 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	logrus.SetReportCaller(true)
+	logrus.SetLevel(logrus.TraceLevel)
+	logrus.Tracef("h1 bucket %+v", bucket)
 	object, err := unescapePath(vars["object"])
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
