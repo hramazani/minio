@@ -1574,18 +1574,24 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 	bucketKeyLen := min(len(bucket), prefixKeyLen)
 	bucketValLen := 0
-	if v, ok := acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
-		if v[0] == "prefix" {
-			bucketValLen = min(len(bucket), len(v))
+	acceptable := false
+	val := []string{}
+	ok := false
+	if val, ok = acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
+		if val[0] == "prefix" {
+			bucketValLen = min(len(bucket), len(val))
 		} else {
 			bucketValLen = len(bucket)
 		}
-		if v[1] == bucket[:bucketValLen] {
-			logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", v, bucket, object)
-			// TODO: update bucket and object
+		if val[1] == bucket[:bucketValLen] {
+			acceptable = true
 		}
+	}
+	if acceptable {
+		logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", val, bucket, object)
+		// TODO: update bucket and object
 	} else {
-		logrus.Tracef("Does not qualify for reshaping bucket and object bucket[:bucketKeyLen:%v]:%v,bucket[:bucketValLen:%v],  , bucket:%v object:%v",
+		logrus.Tracef("Does not qualify for reshaping bucket and object bucket[:bucketKeyLen:%v]:%v,bucket[:bucketValLen:%v], bucket:%v object:%v",
 			bucketKeyLen, bucket[:bucketKeyLen], bucketValLen, bucket[:bucketValLen], bucket, object)
 	}
 	// X-Amz-Copy-Source shouldn't be set for this call.
