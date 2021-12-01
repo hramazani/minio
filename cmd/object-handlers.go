@@ -1559,6 +1559,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	//	TODO: extract a function
 	// key: first 5 chars, value: full prefix
 	const prefixKeyLen = 5
 	acceptablePrefixes := map[string][]string{}
@@ -1587,10 +1588,19 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 			acceptable = true
 		}
 	}
+	envName := "env-4"
+	s3BucketName := "ib-importexport-minio-data-internal"
 	if acceptable {
 		logrus.WithField("val", val).WithField("bucket", bucket).WithField("object", object).
 			Trace("Qualifies for reshaping bucket and object since matching")
 		// TODO: update bucket and object
+		if len(envName) > 0 {
+			object = bucket + "/" + envName + "/" + object
+		} else {
+			object = bucket + "/" + object
+		}
+		bucket = s3BucketName
+		logrus.WithField("new bucket", bucket).WithField("new object", object).Trace("updated bucket and object names")
 	} else {
 		logrus.WithField("bucket", bucket).WithField("object", object).
 			Trace("Does not qualify for reshaping bucket and object")
