@@ -1597,7 +1597,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 			Trace("Qualifies for reshaping bucket and object since matching")
 		// TODO: update bucket and object
 		if len(envName) > 0 {
-			object = bucket + "/" + envName + "/" + object
+			object = envName + "/" + bucket + "/" + object
 		} else {
 			object = bucket + "/" + object
 		}
