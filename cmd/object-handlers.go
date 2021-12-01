@@ -1567,10 +1567,10 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		"conta": "contactsapp",
 	}
 	min := func(a, b int) int {
-		if a < b {
+		if a > b {
 			return b
 		}
-		return a
+		return b
 	}
 	bucketKeyLen := min(len(bucket), prefixKeyLen)
 	bucketValLen := 0
