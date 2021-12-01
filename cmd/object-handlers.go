@@ -1561,11 +1561,11 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 
 	// key: first 5 chars, value: full prefix
 	const prefixKeyLen = 5
-	acceptablePrefixes := map[string]string{
-		"bulk-": "bulk-",
-		"b1tdc": "b1tdc",
-		"conta": "contactsapp",
-	}
+	acceptablePrefixes := map[string][]string{}
+	acceptablePrefixes["bulk-"] = []string{"prefix", "bulk-"}
+	acceptablePrefixes["b1tdc"] = []string{"exact", "b1tdc"}
+	acceptablePrefixes["conta"] = []string{"exact", "contactsapp"}
+
 	min := func(a, b int) int {
 		if a > b {
 			return b
@@ -1574,12 +1574,16 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 	bucketKeyLen := min(len(bucket), prefixKeyLen)
 	bucketValLen := 0
+	acceptable := false
 	if v, ok := acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
-		bucketValLen = min(len(bucket), len(v))
-		if v == bucket[:bucketValLen] {
-			// update bucket and object
+		if v[0] == "prefix" {
+			bucketValLen = min(len(bucket), len(v))
+		} else {
+			bucketValLen = len(bucket)
+		}
+		if v[1] == bucket[:bucketValLen] {
 			logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", v, bucket, object)
-
+			// TODO: update bucket and object
 		}
 	} else {
 		logrus.Tracef("Does not qualify for reshaping bucket and object bucket[:bucketKeyLen:%v]:%v,bucket[:bucketValLen:%v],  , bucket:%v object:%v",
