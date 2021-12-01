@@ -1553,6 +1553,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	logrus.SetLevel(logrus.TraceLevel)
 	logrus.Tracef("h1 bucket %+v", bucket)
 	object, err := unescapePath(vars["object"])
+	logrus.Tracef("h1 object %+v", object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
