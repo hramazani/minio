@@ -1588,12 +1588,14 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		}
 	}
 	if acceptable {
-		logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", val, bucket, object)
+		logrus.WithField("val", val).WithField("bucket", bucket).WithField("object", object).
+			Trace("Qualifies for reshaping bucket and object since matching")
 		// TODO: update bucket and object
 	} else {
-		logrus.Tracef("Does not qualify for reshaping bucket and object bucket[:bucketKeyLen:%v]:%v,bucket[:bucketValLen:%v], bucket:%v object:%v",
-			bucketKeyLen, bucket[:bucketKeyLen], bucketValLen, bucket[:bucketValLen], bucket, object)
+		logrus.WithField("bucket", bucket).WithField("object", object).
+			Trace("Does not qualify for reshaping bucket and object")
 	}
+
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidCopySource), r.URL)
