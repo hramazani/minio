@@ -128,7 +128,7 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
-
+	bucket, object = reshapeBucketAndObject(bucket, object)
 	// get gateway encryption options
 	opts, err := getOpts(ctx, r, bucket, object)
 	if err != nil {
@@ -569,6 +569,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	if r.Header.Get(xMinIOExtract) == "true" && strings.Contains(object, archivePattern) {
 		api.getObjectInArchiveFileHandler(ctx, objectAPI, bucket, object, w, r)
@@ -798,6 +799,7 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	if r.Header.Get(xMinIOExtract) == "true" && strings.Contains(object, archivePattern) {
 		api.headObjectInArchiveFileHandler(ctx, objectAPI, bucket, object, w, r)
@@ -939,6 +941,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	dstBucket, dstObject = reshapeBucketAndObject(dstBucket, dstObject)
 
 	if s3Error := checkRequestAuthType(ctx, r, policy.PutObjectAction, dstBucket, dstObject); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL)
@@ -1960,6 +1963,7 @@ func (api objectAPIHandlers) PutObjectExtractHandler(w http.ResponseWriter, r *h
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
@@ -2253,6 +2257,7 @@ func (api objectAPIHandlers) NewMultipartUploadHandler(w http.ResponseWriter, r 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	if s3Error := checkRequestAuthType(ctx, r, policy.PutObjectAction, bucket, object); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL)
@@ -2384,6 +2389,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	dstBucket, dstObject = reshapeBucketAndObject(dstBucket, dstObject)
 
 	if s3Error := checkRequestAuthType(ctx, r, policy.PutObjectAction, dstBucket, dstObject); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL)
@@ -2708,6 +2714,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
@@ -2958,6 +2965,7 @@ func (api objectAPIHandlers) AbortMultipartUploadHandler(w http.ResponseWriter, 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -2998,6 +3006,7 @@ func (api objectAPIHandlers) ListObjectPartsHandler(w http.ResponseWriter, r *ht
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3137,6 +3146,7 @@ func (api objectAPIHandlers) CompleteMultipartUploadHandler(w http.ResponseWrite
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3378,6 +3388,7 @@ func (api objectAPIHandlers) DeleteObjectHandler(w http.ResponseWriter, r *http.
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3547,6 +3558,7 @@ func (api objectAPIHandlers) PutObjectLegalHoldHandler(w http.ResponseWriter, r 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3655,6 +3667,7 @@ func (api objectAPIHandlers) GetObjectLegalHoldHandler(w http.ResponseWriter, r 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3720,6 +3733,7 @@ func (api objectAPIHandlers) PutObjectRetentionHandler(w http.ResponseWriter, r 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3835,6 +3849,7 @@ func (api objectAPIHandlers) GetObjectRetentionHandler(w http.ResponseWriter, r 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -3899,6 +3914,7 @@ func (api objectAPIHandlers) GetObjectTaggingHandler(w http.ResponseWriter, r *h
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objAPI := api.ObjectAPI()
 	if objAPI == nil {
@@ -3949,6 +3965,7 @@ func (api objectAPIHandlers) PutObjectTaggingHandler(w http.ResponseWriter, r *h
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	objAPI := api.ObjectAPI()
 	if objAPI == nil {
@@ -4046,6 +4063,7 @@ func (api objectAPIHandlers) DeleteObjectTaggingHandler(w http.ResponseWriter, r
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// Allow deleteObjectTagging if policy action is set
 	if s3Error := checkRequestAuthType(ctx, r, policy.DeleteObjectTaggingAction, bucket, object); s3Error != ErrNone {
@@ -4109,6 +4127,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return
 	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// Fetch object stat info.
 	objectAPI := api.ObjectAPI()
