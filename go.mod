@@ -73,6 +73,7 @@ require (
 	github.com/rs/dnscache v0.0.0-20210201191234-295bba877686
 	github.com/secure-io/sio-go v0.3.1
 	github.com/shirou/gopsutil/v3 v3.21.9
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/streadway/amqp v1.0.0
 	github.com/tinylib/msgp v1.1.6
 	github.com/valyala/bytebufferpool v1.0.0

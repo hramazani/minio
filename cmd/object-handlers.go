@@ -62,6 +62,7 @@ import (
 	iampolicy "github.com/minio/pkg/iam/policy"
 	xnet "github.com/minio/pkg/net"
 	"github.com/minio/sio"
+	"github.com/sirupsen/logrus"
 )
 
 // supportedHeadGetReqParams - supported request parameters for GET and HEAD presigned request.
@@ -1548,7 +1549,9 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	logrus.Errorf("here1 bucket name: %v", bucket)
 	object, err := unescapePath(vars["object"])
+	logrus.Errorf("here1 object: %v", object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL)
 		return

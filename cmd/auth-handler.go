@@ -42,6 +42,7 @@ import (
 	"github.com/minio/minio/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	iampolicy "github.com/minio/pkg/iam/policy"
+	"github.com/sirupsen/logrus"
 )
 
 // Verify if request has JWT.
@@ -484,6 +485,7 @@ func isSupportedS3AuthType(aType authType) bool {
 
 // setAuthHandler to validate authorization header for the incoming request.
 func setAuthHandler(h http.Handler) http.Handler {
+	logrus.Errorf("here1 setAuthHandler h:%+v", h)
 	// handler for validating incoming authorization headers.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		aType := getRequestAuthType(r)

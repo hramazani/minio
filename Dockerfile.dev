@@ -1,4 +1,6 @@
-FROM minio/minio:edge
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4
+
+# FROM minio/minio:edge
 
 LABEL maintainer="MinIO Inc <dev@min.io>"
 

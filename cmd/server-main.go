@@ -22,6 +22,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io"
 	"log"
 	"math/rand"
@@ -439,6 +440,7 @@ func (lw nullWriter) Write(b []byte) (int, error) {
 
 // serverMain handler called for 'minio server' command.
 func serverMain(ctx *cli.Context) {
+	logrus.Errorf("here1 serverMain %+v", ctx)
 	signal.Notify(globalOSSignalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 
 	go handleSignals()

@@ -19,6 +19,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 	"net"
 	"net/http"
 	"path"
@@ -398,6 +399,7 @@ func hasMultipleAuth(r *http.Request) bool {
 // requestValidityHandler validates all the incoming paths for
 // any malicious requests.
 func setRequestValidityHandler(h http.Handler) http.Handler {
+	logrus.Errorf("here1 setRequestValidityHandler %+v", h)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check for bad components in URL path.
 		if hasBadPathComponent(r.URL.Path) {
@@ -428,6 +430,7 @@ func setRequestValidityHandler(h http.Handler) http.Handler {
 // on a bucket to the right bucket location, bucket to IP configuration
 // is obtained from centralized etcd configuration service.
 func setBucketForwardingHandler(h http.Handler) http.Handler {
+	logrus.Errorf("here1 setBucketForwardingHandler %+v", h)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if globalDNSConfig == nil || len(globalDomainNames) == 0 || !globalBucketFederation ||
 			guessIsHealthCheckReq(r) || guessIsMetricsReq(r) ||
