@@ -1559,6 +1559,30 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// key: first 5 chars, value: full prefix
+	const prefixKeyLen = 5
+	acceptablePrefixes := map[string]string{
+		"bulk-": "bulk-",
+		"b1tdc": "b1tdc",
+		"conta": "contactsapp",
+	}
+	min := func(a, b int) int {
+		if a < b {
+			return b
+		}
+		return a
+	}
+	bucketKeyLen := min(len(bucket), prefixKeyLen)
+	if v, ok := acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
+		bucketValLen := min(len(bucket), len(v))
+		if v == bucket[:bucketValLen] {
+			// update bucket and object
+			logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", v, bucket, object)
+
+		}
+	} else {
+		logrus.Tracef("Does not qualify for reshaping bucket and object, bucket:%v object:%v", bucket, object)
+	}
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidCopySource), r.URL)
