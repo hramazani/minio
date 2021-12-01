@@ -188,6 +188,7 @@ func (api objectAPIHandlers) GetBucketLocationHandler(w http.ResponseWriter, r *
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -236,6 +237,7 @@ func (api objectAPIHandlers) ListMultipartUploadsHandler(w http.ResponseWriter, 
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -389,6 +391,7 @@ func (api objectAPIHandlers) DeleteMultipleObjectsHandler(w http.ResponseWriter,
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -681,6 +684,7 @@ func (api objectAPIHandlers) PutBucketHandler(w http.ResponseWriter, r *http.Req
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectLockEnabled := false
 	if vs, found := r.Header[http.CanonicalHeaderKey("x-amz-bucket-object-lock-enabled")]; found {
@@ -1118,6 +1122,7 @@ func (api objectAPIHandlers) GetBucketPolicyStatusHandler(w http.ResponseWriter,
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1180,6 +1185,7 @@ func (api objectAPIHandlers) HeadBucketHandler(w http.ResponseWriter, r *http.Re
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1210,6 +1216,7 @@ func (api objectAPIHandlers) DeleteBucketHandler(w http.ResponseWriter, r *http.
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1309,6 +1316,7 @@ func (api objectAPIHandlers) PutBucketObjectLockConfigHandler(w http.ResponseWri
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1379,6 +1387,7 @@ func (api objectAPIHandlers) GetBucketObjectLockConfigHandler(w http.ResponseWri
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1417,6 +1426,7 @@ func (api objectAPIHandlers) PutBucketTaggingHandler(w http.ResponseWriter, r *h
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1481,6 +1491,7 @@ func (api objectAPIHandlers) GetBucketTaggingHandler(w http.ResponseWriter, r *h
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1519,6 +1530,7 @@ func (api objectAPIHandlers) DeleteBucketTaggingHandler(w http.ResponseWriter, r
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1557,6 +1569,7 @@ func (api objectAPIHandlers) PutBucketReplicationConfigHandler(w http.ResponseWr
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrServerNotInitialized), r.URL)
@@ -1621,6 +1634,7 @@ func (api objectAPIHandlers) GetBucketReplicationConfigHandler(w http.ResponseWr
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1661,6 +1675,7 @@ func (api objectAPIHandlers) DeleteBucketReplicationConfigHandler(w http.Respons
 	defer logger.AuditLog(ctx, w, r, mustGetClaimsFromToken(r))
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1696,6 +1711,7 @@ func (api objectAPIHandlers) GetBucketReplicationMetricsHandler(w http.ResponseW
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
@@ -1739,6 +1755,7 @@ func (api objectAPIHandlers) ResetBucketReplicationStateHandler(w http.ResponseW
 
 	vars := mux.Vars(r)
 	bucket := vars["bucket"]
+	bucket, _ = reshapeBucketAndObject(bucket, "")
 	durationStr := r.URL.Query().Get("older-than")
 	arn := r.URL.Query().Get("arn")
 	resetID := r.URL.Query().Get("reset-id")
