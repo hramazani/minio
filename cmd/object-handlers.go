@@ -1560,53 +1560,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	//	TODO: extract a function
-	// key: first 5 chars, value: full prefix
-	const prefixKeyLen = 5
-	acceptablePrefixes := map[string][]string{}
-	acceptablePrefixes["bulk-"] = []string{"prefix", "bulk-"}
-	acceptablePrefixes["b1tdc"] = []string{"exact", "b1tdc"}
-	acceptablePrefixes["conta"] = []string{"exact", "contactsapp"}
-
-	min := func(a, b int) int {
-		if a > b {
-			return b
-		}
-		return b
-	}
-	bucketKeyLen := min(len(bucket), prefixKeyLen)
-	bucketValLen := 0
-	acceptable := false
-	val := []string{}
-	ok := false
-	logrus.WithField("bucketKeyLen", bucketKeyLen).WithField("bucket[:bucketKeyLen]", bucket[:bucketKeyLen]).Trace()
-	if val, ok = acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
-		if val[0] == "prefix" {
-			bucketValLen = min(len(bucket), len(val[1]))
-		} else {
-			bucketValLen = len(bucket)
-		}
-		logrus.WithField("val[1]", val[1]).WithField("bucketValLen", bucketValLen).WithField("bucket[:bucketValLen]", bucket[:bucketValLen]).Trace()
-		if val[1] == bucket[:bucketValLen] {
-			acceptable = true
-		}
-	}
-	envName := "env-4"
-	s3BucketName := "ib-importexport-minio-data-internal"
-	if acceptable {
-		logrus.WithField("val", val).WithField("bucket", bucket).WithField("object", object).
-			Trace("Qualifies for reshaping bucket and object since matching")
-		// TODO: update bucket and object
-		if len(envName) > 0 {
-			object = envName + "/" + bucket + "/" + object
-		} else {
-			object = bucket + "/" + object
-		}
-		bucket = s3BucketName
-		logrus.WithField("new bucket", bucket).WithField("new object", object).Trace("updated bucket and object names")
-	} else {
-		logrus.WithField("bucket", bucket).WithField("object", object).
-			Trace("Does not qualify for reshaping bucket and object")
-	}
+	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
@@ -1914,6 +1868,57 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		enqueueTransitionImmediate(objInfo)
 		logger.LogIf(ctx, os.Sweep())
 	}
+}
+
+func reshapeBucketAndObject(bucket string, object string) (string, string) {
+	// key: first 5 chars, value: full prefix
+	const prefixKeyLen = 5
+	acceptablePrefixes := map[string][]string{}
+	acceptablePrefixes["bulk-"] = []string{"prefix", "bulk-"}
+	acceptablePrefixes["b1tdc"] = []string{"exact", "b1tdc"}
+	acceptablePrefixes["conta"] = []string{"exact", "contactsapp"}
+
+	min := func(a, b int) int {
+		if a > b {
+			return b
+		}
+		return b
+	}
+	bucketKeyLen := min(len(bucket), prefixKeyLen)
+	bucketValLen := 0
+	acceptable := false
+	val := []string{}
+	ok := false
+	logrus.WithField("bucketKeyLen", bucketKeyLen).WithField("bucket[:bucketKeyLen]", bucket[:bucketKeyLen]).Trace()
+	if val, ok = acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
+		if val[0] == "prefix" {
+			bucketValLen = min(len(bucket), len(val[1]))
+		} else {
+			bucketValLen = len(bucket)
+		}
+		logrus.WithField("val[1]", val[1]).WithField("bucketValLen", bucketValLen).WithField("bucket[:bucketValLen]", bucket[:bucketValLen]).Trace()
+		if val[1] == bucket[:bucketValLen] {
+			acceptable = true
+		}
+	}
+	envName := "env-4"
+	s3BucketName := "ib-importexport-minio-data-internal"
+	if acceptable {
+		logrus.WithField("val", val).WithField("bucket", bucket).WithField("object", object).
+			Trace("Qualifies for reshaping bucket and object since matching")
+		// TODO: update bucket and object
+		if len(envName) > 0 {
+			object = envName + "/" + bucket + "/" + object
+		} else {
+			object = bucket + "/" + object
+		}
+		bucket = s3BucketName
+		logrus.WithField("new bucket", bucket).WithField("new object", object).Trace("updated bucket and object names")
+	} else {
+		logrus.WithField("bucket", bucket).WithField("object", object).
+			Trace("Does not qualify for reshaping bucket and object")
+	}
+	return bucket, object
 }
 
 // PutObjectExtractHandler - PUT Object extract is an extended API
