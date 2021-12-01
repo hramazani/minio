@@ -1574,7 +1574,6 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 	bucketKeyLen := min(len(bucket), prefixKeyLen)
 	bucketValLen := 0
-	acceptable := false
 	if v, ok := acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
 		if v[0] == "prefix" {
 			bucketValLen = min(len(bucket), len(v))
