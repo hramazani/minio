@@ -1573,15 +1573,17 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		return a
 	}
 	bucketKeyLen := min(len(bucket), prefixKeyLen)
+	bucketValLen := 0
 	if v, ok := acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
-		bucketValLen := min(len(bucket), len(v))
+		bucketValLen = min(len(bucket), len(v))
 		if v == bucket[:bucketValLen] {
 			// update bucket and object
 			logrus.Tracef("Qualifies for reshaping bucket and object since matching %v, bucket:%v object:%v", v, bucket, object)
 
 		}
 	} else {
-		logrus.Tracef("Does not qualify for reshaping bucket and object, bucket:%v object:%v", bucket, object)
+		logrus.Tracef("Does not qualify for reshaping bucket and object bucket[:bucketKeyLen:%v]:%v,bucket[:bucketValLen:%v],  , bucket:%v object:%v",
+			bucketKeyLen, bucket[:bucketKeyLen], bucketValLen, bucket[:bucketValLen], bucket, object)
 	}
 	// X-Amz-Copy-Source shouldn't be set for this call.
 	if _, ok := r.Header[xhttp.AmzCopySource]; ok {
