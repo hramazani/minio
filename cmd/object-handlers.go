@@ -1581,7 +1581,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	logrus.WithField("bucketKeyLen", bucketKeyLen).WithField("bucket[:bucketKeyLen]", bucket[:bucketKeyLen]).Trace()
 	if val, ok = acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
 		if val[0] == "prefix" {
-			bucketValLen = min(len(bucket), len(val))
+			bucketValLen = min(len(bucket), len(val[1]))
 		} else {
 			bucketValLen = len(bucket)
 		}
