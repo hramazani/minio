@@ -1578,12 +1578,14 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	acceptable := false
 	val := []string{}
 	ok := false
+	logrus.WithField("bucketKeyLen", bucketKeyLen).WithField("bucket[:bucketKeyLen]", bucket[:bucketKeyLen]).Trace()
 	if val, ok = acceptablePrefixes[bucket[:bucketKeyLen]]; ok {
 		if val[0] == "prefix" {
 			bucketValLen = min(len(bucket), len(val))
 		} else {
 			bucketValLen = len(bucket)
 		}
+		logrus.WithField("val[1]", val[1]).WithField("bucketValLen", bucketValLen).WithField("bucket[:bucketValLen]", bucket[:bucketValLen]).Trace()
 		if val[1] == bucket[:bucketValLen] {
 			acceptable = true
 		}
