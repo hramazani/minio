@@ -1559,7 +1559,6 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	//	TODO: extract a function
 	bucket, object = reshapeBucketAndObject(bucket, object)
 
 	// X-Amz-Copy-Source shouldn't be set for this call.
@@ -1906,7 +1905,6 @@ func reshapeBucketAndObject(bucket string, object string) (string, string) {
 	if acceptable {
 		logrus.WithField("val", val).WithField("bucket", bucket).WithField("object", object).
 			Trace("Qualifies for reshaping bucket and object since matching")
-		// TODO: update bucket and object
 		if len(envName) > 0 {
 			object = envName + "/" + bucket + "/" + object
 		} else {
